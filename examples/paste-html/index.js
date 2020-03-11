@@ -68,6 +68,42 @@ const RULES = [
         }
       }
     },
+    serialize(obj, children) {
+      if (obj.object === 'block') {
+        switch (obj.type) {
+          case BLOCK_TAGS.p:
+            return <p className={obj.data.get('className')}>{children}</p>
+          case BLOCK_TAGS.li:
+            return <li>{children}</li>
+          case BLOCK_TAGS.ul:
+            return <ul className={obj.data.get('className')}>{children}</ul>
+          case BLOCK_TAGS.ol:
+            return <ol className={obj.data.get('className')}>{children}</ol>
+          case BLOCK_TAGS.blockquote:
+            return <blockquote>{children}</blockquote>
+          case BLOCK_TAGS.pre:
+            return (
+              <pre>
+                <code>{children}</code>
+              </pre>
+            )
+          case BLOCK_TAGS.h1:
+            return <h1 className={obj.data.get('className')}>{children}</h1>
+          case BLOCK_TAGS.h2:
+            return <h2 className={obj.data.get('className')}>{children}</h2>
+          case BLOCK_TAGS.h3:
+            return <h3 className={obj.data.get('className')}>{children}</h3>
+          case BLOCK_TAGS.h4:
+            return <h4 className={obj.data.get('className')}>{children}</h4>
+          case BLOCK_TAGS.h5:
+            return <h5 className={obj.data.get('className')}>{children}</h5>
+          case BLOCK_TAGS.h6:
+            return <h6 className={obj.data.get('className')}>{children}</h6>
+          // case 'img':
+          //   return <img></img>
+        }
+      }
+    },
   },
   {
     deserialize(el, next) {
@@ -78,6 +114,20 @@ const RULES = [
           object: 'mark',
           type: mark,
           nodes: next(el.childNodes),
+        }
+      }
+    },
+    serialize(obj, children) {
+      if (obj.object === 'mark') {
+        switch (obj.type) {
+          case MARK_TAGS.strong:
+            return <strong>{children}</strong>
+          case MARK_TAGS.em:
+            return <em>{children}</em>
+          case MARK_TAGS.u:
+            return <u>{children}</u>
+          case MARK_TAGS.s:
+            return <s>{children}</s>
         }
       }
     },
@@ -114,6 +164,8 @@ const RULES = [
         }
       }
     },
+    // serialize(obj, children) {
+    // },
   },
   {
     // Special case for links, to grab their href.
@@ -161,6 +213,10 @@ class PasteHtml extends React.Component {
     },
   }
 
+  state = {
+    value: serializer.deserialize('<p></p>'),
+  }
+
   /**
    * Render.
    *
@@ -171,12 +227,22 @@ class PasteHtml extends React.Component {
     return (
       <Editor
         placeholder="Paste in some HTML..."
-        defaultValue={initialValue}
+        // defaultValue={initialValue}
+        value={this.state.value}
         schema={this.schema}
         onPaste={this.onPaste}
         renderBlock={this.renderBlock}
         renderInline={this.renderInline}
         renderMark={this.renderMark}
+        onChange={({ value }) => {
+          // When the document changes, save the serialized HTML to Local Storage.
+          if (value.document !== this.state.value.document) {
+            const string = serializer.serialize(value)
+            localStorage.setItem('content', string)
+          }
+
+          this.setState({ value })
+        }}
       />
     )
   }
@@ -274,13 +340,13 @@ class PasteHtml extends React.Component {
     const { children, mark, attributes } = props
 
     switch (mark.type) {
-      case 'bold':
+      case MARK_TAGS.strong:
         return <strong {...attributes}>{children}</strong>
-      case 'code':
+      case MARK_TAGS.code:
         return <code {...attributes}>{children}</code>
-      case 'italic':
+      case MARK_TAGS.em:
         return <em {...attributes}>{children}</em>
-      case 'underlined':
+      case MARK_TAGS.u:
         return <u {...attributes}>{children}</u>
       default:
         return next()
@@ -297,7 +363,7 @@ class PasteHtml extends React.Component {
   onPaste = (event, editor, next) => {
     event.preventDefault()
     const transfer = getEventTransfer(event)
-    if (transfer.type !== 'html') return next()
+    if (transfer.type !== 'html' && transfer.type !== 'fragment') return next()
     const { document } = serializer.deserialize(transfer.html)
     editor.insertFragment(document)
   }
