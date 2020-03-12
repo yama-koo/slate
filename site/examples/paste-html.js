@@ -82,12 +82,25 @@ export const deserialize = el => {
 
 const PasteHtmlExample = () => {
   const [value, setValue] = useState(initialValue)
+  // const [value, setValue] = useState(
+  //   desirialize(
+  //     '<p>テスト<strong>ほげ</strong><em><strong>ほげ</strong></em><u><em>ふが</em></u><u>ぴよ</u></p>'
+  //   )
+  // )
   const renderElement = useCallback(props => <Element {...props} />, [])
   const renderLeaf = useCallback(props => <Leaf {...props} />, [])
   const editor = useMemo(
     () => withHtml(withReact(withHistory(createEditor()))),
     []
   )
+  const p = new DOMParser().parseFromString(
+    '<p>テスト<strong>ほげ</strong><em><strong>ほげ</strong></em><u><em>ふが</em></u><u>ぴよ</u></p>',
+    'text/html'
+  )
+  // const doc =
+  //   '<p>テスト<strong>ほげ</strong><em><strong>ほげ</strong></em><u><em>ふが</em></u><u>ぴよ</u></p>'
+  // console.log(p.body)
+  console.log(JSON.stringify(deserialize(p.body)))
   return (
     <Slate editor={editor} value={value} onChange={value => setValue(value)}>
       <Editable
@@ -114,6 +127,7 @@ const withHtml = editor => {
     const html = data.getData('text/html')
 
     if (html) {
+      // console.log(html)
       const parsed = new DOMParser().parseFromString(html, 'text/html')
       const fragment = deserialize(parsed.body)
       Transforms.insertFragment(editor, fragment)
