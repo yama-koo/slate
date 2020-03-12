@@ -22,17 +22,19 @@ const initialValue = Value.fromJSON(initialValueAsJson)
 
 const BLOCK_TAGS = {
   p: 'paragraph',
-  li: 'list-item',
-  ul: 'bulleted-list',
-  ol: 'numbered-list',
+  li: 'list_item',
+  // ul: 'bulleted-list',
+  ul: 'ul_list',
+  // ol: 'numbered-list',
+  ol: 'ol_list',
   blockquote: 'quote',
   pre: 'code',
-  h1: 'heading-one',
-  h2: 'heading-two',
-  h3: 'heading-three',
-  h4: 'heading-four',
-  h5: 'heading-five',
-  h6: 'heading-six',
+  h1: 'heading_one',
+  h2: 'heading_two',
+  h3: 'heading_three',
+  h4: 'heading_four',
+  h5: 'heading_five',
+  h6: 'heading_six',
 }
 
 /**
@@ -70,6 +72,8 @@ const RULES = [
     },
     serialize(obj, children) {
       if (obj.object === 'block') {
+        console.log(obj.type)
+
         switch (obj.type) {
           case BLOCK_TAGS.p:
             return <p className={obj.data.get('className')}>{children}</p>
@@ -214,7 +218,243 @@ class PasteHtml extends React.Component {
   }
 
   state = {
-    value: serializer.deserialize('<p></p>'),
+    // value: serializer.deserialize('<p>hogehoge</p>'),
+    value: Value.fromJSON({
+      object: 'value',
+      document: {
+        object: 'document',
+        nodes: [
+          {
+            object: 'block',
+            type: 'paragraph',
+            nodes: [
+              {
+                object: 'text',
+                text: 'てすと',
+                marks: [],
+              },
+              {
+                object: 'text',
+                text: 'ほげ_ほげ_',
+                marks: [
+                  {
+                    object: 'mark',
+                    type: 'bold',
+                    data: {},
+                  },
+                ],
+              },
+              {
+                object: 'text',
+                text: '_ふが_ぴよ',
+                marks: [],
+              },
+            ],
+            data: {},
+          },
+          {
+            object: 'block',
+            data: {
+              tight: 'true',
+            },
+            type: 'ul_list',
+            nodes: [
+              {
+                object: 'block',
+                type: 'list_item',
+                data: {},
+                nodes: [
+                  {
+                    object: 'block',
+                    type: 'paragraph',
+                    nodes: [
+                      {
+                        object: 'text',
+                        text: 'aaa',
+                        marks: [],
+                      },
+                    ],
+                    data: {},
+                  },
+                ],
+              },
+              {
+                object: 'block',
+                type: 'list_item',
+                data: {},
+                nodes: [
+                  {
+                    object: 'block',
+                    type: 'paragraph',
+                    nodes: [
+                      {
+                        object: 'text',
+                        text: 'bbb',
+                        marks: [],
+                      },
+                    ],
+                    data: {},
+                  },
+                ],
+              },
+              {
+                object: 'block',
+                type: 'list_item',
+                data: {},
+                nodes: [
+                  {
+                    object: 'block',
+                    type: 'paragraph',
+                    nodes: [
+                      {
+                        object: 'text',
+                        text: 'ccc',
+                        marks: [],
+                      },
+                    ],
+                    data: {},
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            object: 'block',
+            data: {
+              tight: 'true',
+              start: '1',
+              delimiter: 'period',
+            },
+            type: 'ol_list',
+            nodes: [
+              {
+                object: 'block',
+                type: 'list_item',
+                data: {},
+                nodes: [
+                  {
+                    object: 'block',
+                    type: 'paragraph',
+                    nodes: [
+                      {
+                        object: 'text',
+                        text: 'ddd',
+                        marks: [],
+                      },
+                    ],
+                    data: {},
+                  },
+                ],
+              },
+              {
+                object: 'block',
+                type: 'list_item',
+                data: {},
+                nodes: [
+                  {
+                    object: 'block',
+                    type: 'paragraph',
+                    nodes: [
+                      {
+                        object: 'text',
+                        text: 'eee',
+                        marks: [],
+                      },
+                    ],
+                    data: {},
+                  },
+                ],
+              },
+              {
+                object: 'block',
+                type: 'list_item',
+                data: {},
+                nodes: [
+                  {
+                    object: 'block',
+                    type: 'paragraph',
+                    nodes: [
+                      {
+                        object: 'text',
+                        text: 'fff',
+                        marks: [],
+                      },
+                    ],
+                    data: {},
+                  },
+                  {
+                    object: 'block',
+                    data: {
+                      tight: 'true',
+                      start: '1',
+                      delimiter: 'period',
+                    },
+                    type: 'ol_list',
+                    nodes: [
+                      {
+                        object: 'block',
+                        type: 'list_item',
+                        data: {},
+                        nodes: [
+                          {
+                            object: 'block',
+                            type: 'paragraph',
+                            nodes: [
+                              {
+                                object: 'text',
+                                text: 'hoge**',
+                                marks: [],
+                              },
+                              {
+                                object: 'text',
+                                text: 'hoge',
+                                marks: [
+                                  {
+                                    object: 'mark',
+                                    type: 'italic',
+                                    data: {},
+                                  },
+                                ],
+                              },
+                              {
+                                object: 'text',
+                                text: '**_ fuga_ piyo',
+                                marks: [],
+                              },
+                            ],
+                            data: {},
+                          },
+                        ],
+                      },
+                      {
+                        object: 'block',
+                        type: 'list_item',
+                        data: {},
+                        nodes: [
+                          {
+                            object: 'block',
+                            type: 'paragraph',
+                            nodes: [
+                              {
+                                object: 'text',
+                                text: 'hhh',
+                                marks: [],
+                              },
+                            ],
+                            data: {},
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        data: {},
+      },
+    }),
   }
 
   /**
@@ -227,17 +467,22 @@ class PasteHtml extends React.Component {
     return (
       <Editor
         placeholder="Paste in some HTML..."
-        // defaultValue={initialValue}
-        value={this.state.value}
+        defaultValue={this.state.value}
+        // value={this.state.value}
         schema={this.schema}
         onPaste={this.onPaste}
         renderBlock={this.renderBlock}
         renderInline={this.renderInline}
         renderMark={this.renderMark}
         onChange={({ value }) => {
+          // console.log(value.document.toJS())
+          // console.log(this.state.value.document.toJS())
+
           // When the document changes, save the serialized HTML to Local Storage.
           if (value.document !== this.state.value.document) {
+            console.log('save')
             const string = serializer.serialize(value)
+            console.log(string)
             localStorage.setItem('content', string)
           }
 
@@ -256,35 +501,38 @@ class PasteHtml extends React.Component {
 
   renderBlock = (props, editor, next) => {
     const { attributes, children, node, isFocused } = props
+    // console.log(node.type)
 
     switch (node.type) {
-      case 'paragraph':
+      case BLOCK_TAGS.p:
         return <p {...attributes}>{children}</p>
-      case 'quote':
+      case BLOCK_TAGS.blockquote:
         return <blockquote {...attributes}>{children}</blockquote>
-      case 'code':
+      case BLOCK_TAGS.pre:
         return (
           <pre>
             <code {...attributes}>{children}</code>
           </pre>
         )
-      case 'bulleted-list':
+      case BLOCK_TAGS.ul: {
+        console.log(BLOCK_TAGS.ul)
         return <ul {...attributes}>{children}</ul>
-      case 'heading-one':
+      }
+      case BLOCK_TAGS.h1:
         return <h1 {...attributes}>{children}</h1>
-      case 'heading-two':
+      case BLOCK_TAGS.h2:
         return <h2 {...attributes}>{children}</h2>
-      case 'heading-three':
+      case BLOCK_TAGS.h3:
         return <h3 {...attributes}>{children}</h3>
-      case 'heading-four':
+      case BLOCK_TAGS.h4:
         return <h4 {...attributes}>{children}</h4>
-      case 'heading-five':
+      case BLOCK_TAGS.h5:
         return <h5 {...attributes}>{children}</h5>
-      case 'heading-six':
+      case BLOCK_TAGS.h6:
         return <h6 {...attributes}>{children}</h6>
-      case 'list-item':
+      case BLOCK_TAGS.li:
         return <li {...attributes}>{children}</li>
-      case 'numbered-list':
+      case BLOCK_TAGS.ol:
         return <ol {...attributes}>{children}</ol>
       case 'image':
         const src = node.data.get('src')
